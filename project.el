@@ -41,3 +41,6 @@
   (interactive "sEnter commit message: ")
   (shell-command (concat "svn commit " (get-project-root) " -m '" message "'")))
 (global-set-key (quote [f8]) (quote svn-commit-project))
+
+
+(provide 'project)

@@ -7,7 +7,7 @@ Inserts import statement for word at cursor at the beginning of the file. Search
 
 Project shortcuts (mostly SVN inegration)
 -----------------------------------------
-Simple shortcuts for common project operations
+Simple shortcuts for common project operations:
  * grep project (f4)
  * svn up of project (f5)
  * svn diff of project (f6)
