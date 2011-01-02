@@ -25,24 +25,30 @@
 
 (defun insert-import-statement (import-statement)
   "Insert import-statement before the first import in the current buffer"
+  ;; TODO - add name to "from" list if possible
   (save-excursion  
     (goto-char (point-min))
     (search-forward "import" nil t)
     (beginning-of-line)
     (insert import-statement) (newline)))
 
+(defconst py-symbols "a-zA-Z_0-9")
 
 (defun find-import-string (word)
   "Find string that imports the desired word"
   (save-excursion
     (goto-char (point-min))
     (let ((import-pos
-	   (re-search-forward (concat "import[a-zA-Z _,0-9]* " word
-				      "[a-zA-Z _,0-9]*$")
+	   (re-search-forward (concat "import[" py-symbols " ,]* " word
+				      "[" py-symbols " ,]*$")
 			      nil t)))
       (if import-pos
-	  ;; TODO - leave only import of word (in case of import foo, word, bar, baz)
-	  (thing-at-point 'line)))))
+	  ;; TODO - import of modules (like import os.path or from foo import bar.baz)
+	  (let ((import-string (thing-at-point 'line)))
+	    (if (string-match (concat "^\\(from [" py-symbols "]+\\) import ")
+			      import-string)
+		(concat (match-string 1 import-string) " import " word)
+	      (concat "import " word)))))))
 
 
 (defun next-user-buffer ()
