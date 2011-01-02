@@ -6,12 +6,12 @@
   (let ((word (thing-at-point 'word))
 	(current (current-buffer))
 	import-statement)
-    (setq import-statement (find-import-string word))
+    (setq import-statement (find-import-statement word))
     (if (not import-statement)
 	(progn
 	  (let ((buffer (next-user-buffer)))
 	    (while (and (not (equal buffer current)) (not import-statement))
-	      (setq import-statement (find-import-string word))
+	      (setq import-statement (find-import-statement word))
 	      (if import-statement
 		  (progn
 		    (set-buffer current)
@@ -23,31 +23,47 @@
     (switch-to-buffer current)))
 
 
+(defconst py-symbols "a-zA-Z_0-9\.")
+
+
 (defun insert-import-statement (import-statement)
   "Insert import-statement before the first import in the current buffer"
-  ;; TODO - add name to "from" list if possible
-  (save-excursion  
-    (goto-char (point-min))
-    (search-forward "import" nil t)
-    (beginning-of-line)
-    (insert import-statement) (newline)))
+  (let (inserted)
+    (save-excursion
+      (goto-char (point-min))
+      (if (string-match 
+	   (concat "^\\(from [" py-symbols "]+\\) import \\([" py-symbols "]+\\)$")
+	   import-statement)
+	  (let ((from-part (match-string 1 import-statement))
+		(word (match-string 2 import-statement)))
+	    ;; search for statement with the same "from" part
+	    (if (search-forward from-part nil t)
+		(progn
+		  (end-of-line)
+		  (insert (concat ", " word))
+		  (setq inserted t)))))
+      (if (not inserted)
+	  (progn ;; then insert before the first import statement in the file
+	    (goto-char (point-min))
+	    (search-forward "import" nil t)
+	    (beginning-of-line)
+	    (insert import-statement) (newline))))))
 
-(defconst py-symbols "a-zA-Z_0-9")
 
-(defun find-import-string (word)
+(defun find-import-statement (word)
   "Find string that imports the desired word"
   (save-excursion
     (goto-char (point-min))
     (let ((import-pos
-	   (re-search-forward (concat "import[" py-symbols " ,]* " word
-				      "[" py-symbols " ,]*$")
-			      nil t)))
+	   (re-search-forward
+	    (concat "import[" py-symbols " ,]* " word "[" py-symbols " ,]*$")
+	    nil t)))
       (if import-pos
 	  ;; TODO - import of modules (like import os.path or from foo import bar.baz)
-	  (let ((import-string (thing-at-point 'line)))
+	  (let ((import-statement (thing-at-point 'line)))
 	    (if (string-match (concat "^\\(from [" py-symbols "]+\\) import ")
-			      import-string)
-		(concat (match-string 1 import-string) " import " word)
+			      import-statement)
+		(concat (match-string 1 import-statement) " import " word)
 	      (concat "import " word)))))))
 
 
