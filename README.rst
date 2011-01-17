@@ -13,4 +13,3 @@ Simple shortcuts for common project operations:
  * svn diff of project (f6)
  * svn status of project (f7)
  * svn commit (f8)
-
