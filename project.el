@@ -21,25 +21,33 @@
 
 (defun svn-update-project ()
   (interactive)
-  (shell-command (concat "svn up " (get-project-root))))
+  (shell-command (concat "svn up " (get-project-root)))
+  (with-current-buffer "*Shell Command Output*"
+    (normal-mode)))
 (global-set-key (quote [f5]) (quote svn-update-project))
 
 
 (defun svn-diff-project ()
   (interactive)
-  (shell-command (concat "svn diff " (get-project-root))))
+  (shell-command (concat "svn diff " (get-project-root)))
+  (with-current-buffer "*Shell Command Output*"
+    (diff-mode)))
 (global-set-key (quote [f6]) (quote svn-diff-project))
 
 
 (defun svn-status-project ()
   (interactive)
-  (shell-command (concat "svn status " (get-project-root))))
+  (shell-command (concat "svn status " (get-project-root)))
+  (with-current-buffer "*Shell Command Output*"
+    (normal-mode)))
 (global-set-key (quote [f7]) (quote svn-status-project))
 
 
 (defun svn-commit-project (message)
   (interactive "sEnter commit message: ")
-  (shell-command (concat "svn commit " (get-project-root) " -m '" message "'")))
+  (shell-command (concat "svn commit " (get-project-root) " -m '" message "'"))
+  (with-current-buffer "*Shell Command Output*"
+    (normal-mode)))
 (global-set-key (quote [f8]) (quote svn-commit-project))
 
 
