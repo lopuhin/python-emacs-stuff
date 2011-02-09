@@ -14,7 +14,7 @@
 
 (defun grep-project (s)
   (interactive "sSearch project for: ")
-  (grep-find (concat "find " (get-project-root) " -type f -not -name \"*.svn-base\" -and -not -name \"*.tmp\" -and -not -name \"*.log\" -and -not -name \"*.xml\" -and -not -name \"*.svn\"  -and -not -name \"*.pyc\"  -and -not -name \"entries\" -and -not -name \"*.psql\" -print0 | xargs -0 -e grep -n -s -w \
+  (grep-find (concat "find " (get-project-root) " -type f -not -name \"*.svn-base\" -and -not -name \"*.tmp\" -and -not -name \"*.log\" -and -not -name \"*.xml\" -and -not -name \"*.svn\"  -and -not -name \"*.pyc\"  -and -not -name \"entries\" -and -not -name \"00[0-9][0-9]_*.py\" -and -not -name \"*.psql\" -and -not -name \"*.py~\" -print0 | xargs -0 -e grep -n -s -w \
 -F \"" s "\"")))
 (global-set-key (quote [f4]) (quote grep-project))
 

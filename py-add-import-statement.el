@@ -27,25 +27,32 @@
 
 
 (defun insert-import-statement (import-statement)
-  "Insert import-statement before the first import in the current buffer"
+  "Add import to existing 'from module import ...' or
+  insert import-statement before the first import in the current buffer"
   (let (inserted)
     (save-excursion
       (goto-char (point-min))
-      (if (string-match 
-	   (concat "^\\(from [" py-symbols "]+\\) import \\([" py-symbols "]+\\)$")
+      (if (string-match
+	   (concat "^\\(from [" py-symbols "]+ import\\) \\([" py-symbols "]+\\)$")
 	   import-statement)
 	  (let ((from-part (match-string 1 import-statement))
 		(word (match-string 2 import-statement)))
 	    ;; search for statement with the same "from" part
 	    (if (search-forward from-part nil t)
 		(progn
+		  (while (string-match "\\\\$" (thing-at-point 'line))
+		    (next-line))
 		  (end-of-line)
 		  (insert (concat ", " word))
 		  (setq inserted t)))))
       (if (not inserted)
 	  (progn ;; then insert before the first import statement in the file
 	    (goto-char (point-min))
-	    (search-forward "import" nil t)
+	    (if (not (search-forward "import" nil t))
+		(progn ;; insert at the first not comment line
+		  (while (string-match "^[ ]*#" (thing-at-point 'line))
+		    (next-line))
+		  (newline)))
 	    (beginning-of-line)
 	    (insert import-statement) (newline))))))
 
